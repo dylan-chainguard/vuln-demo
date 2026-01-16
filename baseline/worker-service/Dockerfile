@@ -1,5 +1,5 @@
 # Standard OpenJDK image
-FROM maven:3.8-openjdk-11 AS build
+FROM cgr.dev/dylans-donuts.com/maven:3.9-jdk11-dev AS build
 
 WORKDIR /app
 
@@ -11,8 +11,8 @@ RUN mvn dependency:go-offline
 COPY Worker.java /app/src/main/java/com/demo/worker/Worker.java
 RUN mvn clean package -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:11-jre
+# Runtime stage - Chainguard JRE image (minimal, hardened base)
+FROM cgr.dev/dylans-donuts.com/adoptium-jre:latest
 
 WORKDIR /app
 
