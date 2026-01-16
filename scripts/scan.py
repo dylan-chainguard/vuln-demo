@@ -47,10 +47,10 @@ def run_command(cmd: List[str], cwd: str = None) -> Tuple[int, str, str]:
 def build_docker_image(dockerfile_path: str, image_name: str = "banking-app") -> bool:
     """Build the Docker image"""
     print(f"🔨 Building Docker image '{image_name}' from {dockerfile_path}...")
-    banking_app_dir = str(Path(dockerfile_path).parent)
+    build_dir = str(Path(dockerfile_path).parent)
     
     cmd = ["docker", "build", "-t", image_name, "-f", dockerfile_path, "."]
-    exit_code, stdout, stderr = run_command(cmd, cwd=banking_app_dir)
+    exit_code, stdout, stderr = run_command(cmd, cwd=build_dir)
     
     if exit_code != 0:
         print(f"❌ Failed to build Docker image:")
@@ -59,6 +59,32 @@ def build_docker_image(dockerfile_path: str, image_name: str = "banking-app") ->
     
     print(f"✅ Successfully built Docker image '{image_name}'")
     return True
+
+
+def build_baseline_images(baseline_dir: str) -> List[str]:
+    """Build all images in the baseline/ directory"""
+    baseline_path = Path(baseline_dir)
+    built_images = []
+    
+    print(f"\n🔨 Building all images in baseline/ directory...")
+    
+    # Find all Dockerfiles in subdirectories
+    service_dirs = sorted([d for d in baseline_path.iterdir() if d.is_dir()])
+    
+    for service_dir in service_dirs:
+        dockerfile = service_dir / "Dockerfile"
+        if not dockerfile.exists():
+            print(f"⚠️  No Dockerfile found in {service_dir.name}, skipping...")
+            continue
+        
+        # Create image name from service directory name
+        image_name = f"vuln-demo/{service_dir.name}:latest"
+        
+        print(f"\n📦 Building {service_dir.name}...")
+        if build_docker_image(str(dockerfile), image_name):
+            built_images.append(image_name)
+    
+    return built_images
 
 
 def parse_docker_compose(compose_file: str) -> List[str]:
@@ -287,14 +313,14 @@ def print_vulnerability_table(results: List[ImageVulnerabilities]):
 
 def main():
     """Main function"""
-    # Get the banking-app directory
-    script_dir = Path(__file__).parent
-    dockerfile_path = script_dir / "Dockerfile"
+    # Get the vuln-demo directory
+    script_dir = Path(__file__).parent.parent
+    baseline_dir = script_dir / "baseline"
     compose_file = script_dir / "docker-compose.yml"
     
-    # Verify required files exist
-    if not dockerfile_path.exists():
-        print(f"❌ Error: Dockerfile not found at {dockerfile_path}")
+    # Verify required directories exist
+    if not baseline_dir.exists():
+        print(f"❌ Error: baseline directory not found at {baseline_dir}")
         sys.exit(1)
     
     if not compose_file.exists():
@@ -308,20 +334,19 @@ def main():
         print("   Install grype: brew install grype (on macOS)")
         sys.exit(1)
     
-    # Step 1: Build the banking-app image
-    if not build_docker_image(str(dockerfile_path)):
+    # Step 1: Build all images in the baseline/ directory
+    built_images = build_baseline_images(str(baseline_dir))
+    if not built_images:
+        print("❌ No images were built from baseline/ directory")
         sys.exit(1)
     
-    # Step 2: Parse docker-compose.yml and get all images
+    # Step 2: Parse docker-compose.yml to determine which images to scan
     images = parse_docker_compose(str(compose_file))
     if not images:
         print("❌ No images found in docker-compose.yml")
         sys.exit(1)
     
     # Step 3: Scan all images
-    print("\n" + "="*120)
-    print("SCANNING IMAGES")
-    print("="*120)
     
     results = []
     for image in images:
