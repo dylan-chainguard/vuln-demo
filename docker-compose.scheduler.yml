@@ -1,0 +1,35 @@
+#version: '3.8'
+
+services:
+  vulnerability-scanner-scheduler:
+    build:
+      context: ./scheduler
+      dockerfile: Dockerfile
+    container_name: vuln-scanner-scheduler
+    environment:
+      # Cron schedule: 8 AM Pacific (16:00 UTC) and 6 PM Pacific (02:00 UTC next day)
+      # Note: Times shown are for PST (UTC-8). Adjust +1 hour for PDT.
+      SCAN_SCHEDULE: "0 16,2 * * *"
+      # Set to "true" to run scan immediately on startup
+      RUN_IMMEDIATELY: "true"
+      # Database connection for load-to-database.py script
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: vulndb
+      DB_USER: vulnuser
+      DB_PASSWORD: vulnpass
+    volumes:
+      # Mount Docker socket to allow running docker commands
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount scripts directory (read-only)
+      - ./scripts:/scripts:ro
+      # Mount reports directory for storing scan results
+      - ./reports:/reports
+    networks:
+      - vuln-demo_vuln-demo
+    restart: unless-stopped
+
+networks:
+  vuln-demo_vuln-demo:
+    external: true
+

@@ -1,0 +1,5 @@
+# find changes between vuln scans
+SELECT scan_batch_id, MAX(scan_date), SUM(total_vulnerabilities)
+  FROM scans s JOIN images i ON s.image_id = i.id
+  WHERE i.image_variant = 'chainguard'
+  GROUP BY scan_batch_id ORDER BY MAX(scan_date) DESC;

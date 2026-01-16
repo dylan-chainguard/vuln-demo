@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-service
+  namespace: vuln-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-service
+  template:
+    metadata:
+      labels:
+        app: worker-service
+    spec:
+      containers:
+      - name: worker-service
+        image: vuln-demo/worker-service:latest
+        imagePullPolicy: Never
+        env:
+        - name: DB_URL
+          value: jdbc:postgresql://postgres:5432/vulndb
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_USER
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD

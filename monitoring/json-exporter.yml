@@ -1,0 +1,12 @@
+---
+metrics:
+  - name: trivy_vulnerabilities
+    type: object
+    help: Trivy vulnerability scan results
+    path: '{.Results[*]}'
+    labels:
+      target: '{.Target}'
+      class: '{.Class}'
+      type: '{.Type}'
+    values:
+      vulnerability_count: '{.Vulnerabilities | length}'

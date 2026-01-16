@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: vuln-demo-postgres
+    environment:
+      POSTGRES_DB: vulndb
+      POSTGRES_USER: vulnuser
+      POSTGRES_PASSWORD: vulnpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - vuln-demo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vulnuser"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api-service:
+    image: vuln-demo/api-service:latest
+    container_name: vuln-demo-api
+    environment:
+      DB_HOST: postgres
+      DB_NAME: vulndb
+      DB_USER: vulnuser
+      DB_PASSWORD: vulnpass
+      JWT_SECRET: super-secret-key-change-in-prod
+    ports:
+      - "5000:5000"
+    networks:
+      - vuln-demo
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend-service:
+    image: vuln-demo/frontend-service:latest
+    container_name: vuln-demo-frontend
+    environment:
+      API_URL: http://api-service:5000
+    ports:
+      - "3000:3000"
+    networks:
+      - vuln-demo
+    depends_on:
+      - api-service
+
+  worker-service:
+    image: vuln-demo/worker-service:latest
+    container_name: vuln-demo-worker
+    environment:
+      DB_HOST: postgres
+      DB_NAME: vulndb
+      DB_USER: vulnuser
+      DB_PASSWORD: vulnpass
+    networks:
+      - vuln-demo
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  nginx:
+    image: vuln-demo/nginx:latest
+    container_name: vuln-demo-nginx
+    ports:
+      - "8080:80"
+    networks:
+      - vuln-demo
+    depends_on:
+      - api-service
+      - frontend-service
+
+networks:
+  vuln-demo:
+    driver: bridge
+
+volumes:
+  postgres-data:
