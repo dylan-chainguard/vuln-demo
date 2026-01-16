@@ -58,6 +58,7 @@ if [[ "$VARIANT" == "baseline" ]]; then
         "grafana/grafana:latest"
         "prom/prometheus:latest"
         "python:3.12"
+        "scanner-scheduler:latest"
     )
 else  # chainguard
     INFRA_IMAGES=(
@@ -65,6 +66,7 @@ else  # chainguard
         "cgr.dev/chainguard-private/grafana:latest"
         "cgr.dev/chainguard-private/prometheus:latest"
         "cgr.dev/chrisbro.com/python:3.12"
+        "scanner-scheduler:latest"
     )
 fi
 

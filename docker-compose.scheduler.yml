@@ -1,11 +1,12 @@
 #version: '3.8'
 
 services:
-  vulnerability-scanner-scheduler:
+  scanner-scheduler:
+    image: scanner-scheduler:latest
     build:
       context: ./scheduler
       dockerfile: Dockerfile
-    container_name: vuln-scanner-scheduler
+    container_name: scanner-scheduler
     environment:
       # Cron schedule: 8 AM Pacific (16:00 UTC) and 6 PM Pacific (02:00 UTC next day)
       # Note: Times shown are for PST (UTC-8). Adjust +1 hour for PDT.

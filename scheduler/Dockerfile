@@ -26,7 +26,15 @@ RUN apk add --no-cache \
     py3-pip \
     py3-psycopg2 \
     bash \
-    curl
+    curl \
+    wget \
+    tar
+
+# Install Trivy
+RUN wget -qO - https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz | tar -xz -C /usr/local/bin trivy
+
+# Install Grype
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
 
 # Create directories
 RUN mkdir -p /scripts /reports
