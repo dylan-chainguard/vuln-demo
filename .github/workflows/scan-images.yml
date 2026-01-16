@@ -44,7 +44,7 @@ jobs:
 
       - name: Scan Docker images with Grype
         run: |
-          python3 scan.py
+          python3 scripts/scan.py
 
       - name: Find latest successful main run + artifact id
         id: lookup
@@ -86,7 +86,7 @@ jobs:
       - name: Use previous scan results in PR
         if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
         run: |
-          python3 compare.py _artifacts/scan-results.json scan-results.json
+          python3 scripts/compare.py _artifacts/scan-results.json scan-results.json
 
       - name: Clean up previous scan comments
         if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
