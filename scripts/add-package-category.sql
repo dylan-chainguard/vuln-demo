@@ -1,9 +1,4 @@
--- Add package_category column to vulnerabilities table
-ALTER TABLE vulnerabilities
-ADD COLUMN IF NOT EXISTS package_category VARCHAR(20) DEFAULT 'unknown';
-
--- Create index for better query performance
-CREATE INDEX IF NOT EXISTS idx_vulns_package_category ON vulnerabilities(package_category);
+-- package_category column already created in init.sql, this script handles categorization
 
 -- Update existing records to categorize them
 UPDATE vulnerabilities

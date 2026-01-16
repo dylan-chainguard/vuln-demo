@@ -1,5 +1,5 @@
 # Standard OpenJDK image
-FROM cgr.dev/dylans-donuts.com/maven:3.8-jdk11-dev AS build
+FROM cgr.dev/dylans-donuts.com/maven:3-jdk11-dev AS build
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ COPY Worker.java /app/src/main/java/com/demo/worker/Worker.java
 RUN mvn clean package -DskipTests
 
 # Runtime stage - Chainguard JRE image (minimal, hardened base)
-FROM cgr.dev/dylans-donuts.com/jre:latest
+FROM cgr.dev/dylans-donuts.com/adoptium-jre:latest
 
 WORKDIR /app
 
