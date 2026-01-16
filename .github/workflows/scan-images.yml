@@ -1,0 +1,128 @@
+name: Build and Scan Container Images
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: chainguard-dev/setup-chainctl@main
+        with:
+          identity: ${{ secrets.CHAINGUARD_ID }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Scan Docker images with Grype
+        run: |
+          python3 scan.py
+
+      - name: Find latest successful main run + artifact id
+        id: lookup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          WORKFLOW="scan-images.yml"  # <-- the workflow that uploads the artifact
+          RUN_ID=$(gh run list --workflow "$WORKFLOW" --branch main --status success --limit 1 \
+            --json databaseId -q '.[0].databaseId')
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+
+          ART_ID=$(gh api repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/artifacts \
+            -q '.artifacts[] | select(.name=="vulnerability-scan-results") | .id' | head -n1)
+          echo "artifact_id=$ART_ID" >> "$GITHUB_OUTPUT"
+
+          if [ -z "$ART_ID" ]; then
+            echo "Artifact not found in run $RUN_ID. Available artifacts:"
+            gh api repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/artifacts -q '.artifacts[].name'
+            exit 1
+          fi
+
+          echo $RUN_ID
+          echo $ART_ID
+
+      - name: Download artifact
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+        uses: actions/download-artifact@v5
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.lookup.outputs.run_id }}
+          artifact-id: ${{ steps.lookup.outputs.artifact_id }}
+          path: _artifacts
+      
+      - name: display artifacts
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+        run: |
+          ls -la _artifacts
+
+      - name: Use previous scan results in PR
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+        run: |
+          python3 compare.py _artifacts/scan-results.json scan-results.json
+
+      - name: Clean up previous scan comments
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Find and delete all previous comments containing "Vulnerability Summary"
+          COMMENT_IDS=$(gh pr view ${{ github.event.pull_request.number }} --json comments \
+            --jq '.comments[] | select(.body | contains("Vulnerability Summary")) | .databaseId' 2>/dev/null || echo "")
+          
+          if [ -z "$COMMENT_IDS" ]; then
+            echo "No previous scan comments found"
+            exit 0
+          fi
+          
+          echo "$COMMENT_IDS" | while read comment_id; do
+            if [ -n "$comment_id" ]; then
+              echo "Deleting comment $comment_id"
+              gh api repos/$GITHUB_REPOSITORY/issues/comments/$comment_id -X DELETE || true
+            fi
+          done
+
+      - name: Comment scan results on PR
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f scan-comparison.md ]; then
+            COMMENT=$(cat scan-comparison.md)
+            gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT"
+          fi
+
+      - name: Upload scan results
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulnerability-scan-results
+          path: scan-results.json

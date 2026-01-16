@@ -1,5 +1,5 @@
 # Chainguard Python 3.12 dev image (minimal, hardened base with build tools)
-FROM cgr.dev/chrisbro.com/python-demo-custom:3.12-dev AS builder
+FROM cgr.dev/dylans-donuts.com/python:3.12-dev AS builder
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 USER nonroot
 
 # Runtime stage - minimal Python image
-FROM cgr.dev/chrisbro.com/python:3.12
+FROM cgr.dev/dylans-donuts.com/python:3.12
 
 WORKDIR /app
 

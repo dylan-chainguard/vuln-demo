@@ -62,10 +62,10 @@ if [[ "$VARIANT" == "baseline" ]]; then
     )
 else  # chainguard
     INFRA_IMAGES=(
-        "cgr.dev/chainguard-private/postgres:13"
-        "cgr.dev/chainguard-private/grafana:latest"
-        "cgr.dev/chainguard-private/prometheus:latest"
-        "cgr.dev/chrisbro.com/python:3.12"
+        "cgr.dev/dylans-donuts.com/postgres:13"
+        "cgr.dev/dylans-donuts.com/grafana:latest"
+        "cgr.dev/dylans-donuts.com/prometheus:latest"
+        "cgr.dev/dylans-donuts.com/python:3.12"
         "scanner-scheduler:latest"
     )
 fi

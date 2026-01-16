@@ -1,5 +1,5 @@
 # Chainguard Node.js image (minimal, hardened base)
-FROM cgr.dev/chainguard/node:latest-dev AS builder
+FROM cgr.dev/dylans-donuts.com/node:latest-dev AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ COPY server.js .
 USER nonroot
 
 # Runtime stage - minimal Node image
-FROM cgr.dev/chainguard/node:latest
+FROM cgr.dev/dylans-donuts.com/node:latest
 
 WORKDIR /app
 

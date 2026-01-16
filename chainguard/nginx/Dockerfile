@@ -1,5 +1,5 @@
 # Chainguard Nginx image (minimal, hardened base)
-FROM cgr.dev/chainguard/nginx:latest
+FROM cgr.dev/dylans-donuts.com/nginx:latest
 
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
