@@ -26,11 +26,11 @@ A complete microservices application demonstrating **vulnerability management, s
                              └─────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
-│                   Vulnerability Management                   │
-│  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌──────────┐  │
-│  │  Trivy   │  │  Grype   │─▶│PostgreSQL │─▶│ Grafana  │  │
-│  │ Scanner  │  │ Scanner  │  │  Database │  │Dashboard │  │
-│  └──────────┘  └──────────┘  └───────────┘  └──────────┘  │
+│                   Vulnerability Management                  │
+│  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌──────────┐    │
+│  │  Trivy   │  │  Grype   │─▶│PostgreSQL │─▶│ Grafana  │    │
+│  │ Scanner  │  │ Scanner  │  │  Database │  │Dashboard │    │
+│  └──────────┘  └──────────┘  └───────────┘  └──────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
