@@ -1,0 +1,203 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 7,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH baseline_data AS (\n  SELECT \n    COUNT(*) as total_vulns,\n    SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as critical,\n    SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as high\n  FROM vulnerabilities v\n  JOIN scans s ON v.scan_id = s.id\n  JOIN images i ON v.image_id = i.id\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'baseline' GROUP BY image_id\n  ) AND i.image_variant = 'baseline'\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n),\nchainguard_data AS (\n  SELECT \n    COUNT(*) as total_vulns,\n    SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as critical,\n    SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as high\n  FROM vulnerabilities v\n  JOIN scans s ON v.scan_id = s.id\n  JOIN images i ON v.image_id = i.id\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'chainguard' GROUP BY image_id\n  ) AND i.image_variant = 'chainguard'\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n),\nremediation_calc AS (\n  SELECT \n    (b.total_vulns - c.total_vulns) as vulns_remediated,\n    (b.critical - c.critical) as critical_remediated,\n    (b.high - c.high) as high_remediated\n  FROM baseline_data b, chainguard_data c\n)\nSELECT \n  'Cost Savings' as \"ROI Category\",\n  'Engineering time saved from vulnerability remediation' as \"Description\",\n  vulns_remediated || ' vulnerabilities' as \"Metric\",\n  '$' || TO_CHAR((vulns_remediated * 4 * 150)::numeric, 'FM999,999,999') as \"Value\",\n  'Assumes 4 hours per CVE at $150/hour developer cost' as \"Calculation\"\nFROM remediation_calc\nUNION ALL\nSELECT \n  'Risk Reduction' as \"ROI Category\",\n  'Reduced security incident and breach risk' as \"Description\",\n  critical_remediated || ' critical + ' || high_remediated || ' high vulns' as \"Metric\",\n  '$' || TO_CHAR(((critical_remediated * 50000) + (high_remediated * 10000))::numeric, 'FM999,999,999') as \"Value\",\n  'Critical: $50k risk each, High: $10k risk each' as \"Calculation\"\nFROM remediation_calc\nUNION ALL\nSELECT \n  'Compliance & Speed' as \"ROI Category\",\n  'Faster deployment cycles and compliance posture' as \"Description\",\n  'Reduced audit overhead' as \"Metric\",\n  'Qualitative' as \"Value\",\n  'Easier certifications (SOC2, FedRAMP, etc.)' as \"Calculation\"\nFROM remediation_calc;",
+          "refId": "A"
+        }
+      ],
+      "title": "ROI Analysis - Business Value of Chainguard Images",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 18,
+          "valueSize": 60
+        },
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH baseline_data AS (\n  SELECT \n    SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as critical,\n    SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as high\n  FROM vulnerabilities v\n  JOIN scans s ON v.scan_id = s.id\n  JOIN images i ON v.image_id = i.id\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'baseline' GROUP BY image_id\n  ) AND i.image_variant = 'baseline'\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n),\nchainguard_data AS (\n  SELECT \n    SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as critical,\n    SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as high\n  FROM vulnerabilities v\n  JOIN scans s ON v.scan_id = s.id\n  JOIN images i ON v.image_id = i.id\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'chainguard' GROUP BY image_id\n  ) AND i.image_variant = 'chainguard'\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n),\nremediation_calc AS (\n  SELECT \n    (b.critical - c.critical) as critical_remediated,\n    (b.high - c.high) as high_remediated\n  FROM baseline_data b, chainguard_data c\n)\nSELECT \n  (\n    -- Cost Savings: remediation time at $150/hour, 4 hours per vuln\n    ((critical_remediated + high_remediated) * 4 * 150) +\n    -- Risk Reduction: Critical=$50k, High=$10k per vuln\n    (critical_remediated * 50000) +\n    (high_remediated * 10000)\n  ) as \"Total ROI (Critical & High Only)\"\nFROM remediation_calc;",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Business Value - Critical & High",
+      "type": "stat"
+    }
+  ],
+  "schemaVersion": 42,
+  "tags": [
+    "roi",
+    "business-value",
+    "security"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "All"
+        },
+        "description": "Filter by package category (OS, Application, Binary, Unknown)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Package Category",
+        "multi": false,
+        "name": "package_category",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "All"
+          },
+          {
+            "selected": false,
+            "text": "OS",
+            "value": "os"
+          },
+          {
+            "selected": false,
+            "text": "Language",
+            "value": "application"
+          },
+          {
+            "selected": false,
+            "text": "Binary",
+            "value": "binary"
+          },
+          {
+            "selected": false,
+            "text": "Unknown",
+            "value": "unknown"
+          }
+        ],
+        "query": "All : All, OS : os, Language : application, Binary : binary, Unknown : unknown",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "ROI & Business Value Analysis",
+  "uid": "roi-business-value",
+  "version": 1
+}

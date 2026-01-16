@@ -6,6 +6,7 @@ database/data/
 reports/
 *.json
 !database/schema.sql
+!monitoring/grafana/dashboards/*.json
 
 # Grafana data (user settings, dashboard customizations)
 monitoring/grafana-data/

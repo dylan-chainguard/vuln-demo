@@ -1,0 +1,960 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH baseline_total AS (\n  SELECT SUM(CASE WHEN v.severity IN ('CRITICAL', 'HIGH') THEN 1 ELSE 0 END) as total\n  FROM vulnerabilities v\n  JOIN scans s ON v.scan_id = s.id\n  JOIN images i ON v.image_id = i.id\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'baseline' GROUP BY image_id\n  ) AND i.image_variant = 'baseline'\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n),\nchainguard_total AS (\n  SELECT SUM(CASE WHEN v.severity IN ('CRITICAL', 'HIGH') THEN 1 ELSE 0 END) as total\n  FROM vulnerabilities v\n  JOIN scans s ON v.scan_id = s.id\n  JOIN images i ON v.image_id = i.id\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'chainguard' GROUP BY image_id\n  ) AND i.image_variant = 'chainguard'\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n)\nSELECT \n  ROUND((((b.total - c.total)::numeric / NULLIF(b.total, 0)) * 100)::numeric, 1) as \"Critical & High Reduction\"\nFROM baseline_total b, chainguard_total c;",
+          "refId": "A"
+        }
+      ],
+      "title": "Critical & High Vuln Reduction",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH baseline_total AS (\n  SELECT COUNT(*) as total\n  FROM vulnerabilities v\n  JOIN scans s ON v.scan_id = s.id\n  JOIN images i ON v.image_id = i.id\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'baseline' GROUP BY image_id\n  ) AND i.image_variant = 'baseline'\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n),\nchainguard_total AS (\n  SELECT COUNT(*) as total\n  FROM vulnerabilities v\n  JOIN scans s ON v.scan_id = s.id\n  JOIN images i ON v.image_id = i.id\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'chainguard' GROUP BY image_id\n  ) AND i.image_variant = 'chainguard'\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n)\nSELECT \n  ROUND((((b.total - c.total)::numeric / NULLIF(b.total, 0)) * 100)::numeric, 1) as \"Vulnerability Reduction\"\nFROM baseline_total b, chainguard_total c;",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Vulnerability Reduction",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decmbytes"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto",
+        "text": {}
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  SUM(i.size_bytes) / 1024.0 / 1024.0 as \"Total Size\"\nFROM images i\nWHERE i.image_variant = 'baseline'\nAND i.id IN (\n  SELECT DISTINCT image_id FROM scans WHERE scan_status = 'completed' AND image_variant = 'baseline'\n);",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Baseline Image Size",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decmbytes"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  SUM(i.size_bytes) / 1024.0 / 1024.0 as \"Total Size\"\nFROM images i\nWHERE i.image_variant = 'chainguard'\nAND i.id IN (\n  SELECT DISTINCT image_id FROM scans WHERE scan_status = 'completed' AND image_variant = 'chainguard'\n);",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Chainguard Image Size",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "axisSoftMin": 0,
+            "axisSoftMax": 2500
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Critical"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Medium"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Low"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "id": 5,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  TO_CHAR(MIN(s.scan_date), 'YYYY-MM-DD HH24:MI:SS') as metric,\n  SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as \"Critical\",\n  SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as \"High\",\n  SUM(CASE WHEN v.severity = 'MEDIUM' THEN 1 ELSE 0 END) as \"Medium\",\n  SUM(CASE WHEN v.severity = 'LOW' THEN 1 ELSE 0 END) as \"Low\"\nFROM scans s\nJOIN images i ON s.image_id = i.id\nLEFT JOIN vulnerabilities v ON v.scan_id = s.id\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\nWHERE s.scan_status = 'completed'\n  AND s.scan_batch_id IS NOT NULL\n  AND s.image_variant = 'chainguard'\n  AND (NULLIF('$image_filter', 'All') IS NULL OR\n       CASE\n         WHEN i.image_name LIKE 'vuln-demo/%' THEN REGEXP_REPLACE(i.image_name, '^vuln-demo/', '')\n         WHEN i.image_name LIKE '%/grafana' THEN 'grafana'\n         WHEN i.image_name LIKE '%/postgres' THEN 'postgres'\n         WHEN i.image_name LIKE '%/prometheus' THEN 'prometheus'\n         WHEN i.image_name LIKE '%/python-demo-custom' THEN 'python'\n         ELSE REGEXP_REPLACE(i.image_name, '^.+/', '')\n       END = '$image_filter')\nGROUP BY s.scan_batch_id\nORDER BY MIN(s.scan_date);",
+          "refId": "A"
+        }
+      ],
+      "title": "Chainguard - Vulnerabilities Over Time",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "axisSoftMin": 0,
+            "axisSoftMax": 2500
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Critical"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Medium"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Low"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "id": 6,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  TO_CHAR(MIN(s.scan_date), 'YYYY-MM-DD HH24:MI:SS') as metric,\n  SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as \"Critical\",\n  SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as \"High\",\n  SUM(CASE WHEN v.severity = 'MEDIUM' THEN 1 ELSE 0 END) as \"Medium\",\n  SUM(CASE WHEN v.severity = 'LOW' THEN 1 ELSE 0 END) as \"Low\"\nFROM scans s\nJOIN images i ON s.image_id = i.id\nLEFT JOIN vulnerabilities v ON v.scan_id = s.id\n  AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\nWHERE s.scan_status = 'completed'\n  AND s.scan_batch_id IS NOT NULL\n  AND s.image_variant = 'baseline'\n  AND (NULLIF('$image_filter', 'All') IS NULL OR\n       CASE\n         WHEN i.image_name LIKE 'vuln-demo/%' THEN REGEXP_REPLACE(i.image_name, '^vuln-demo/', '')\n         WHEN i.image_name LIKE 'grafana/%' THEN 'grafana'\n         WHEN i.image_name LIKE 'postgres/%' THEN 'postgres'\n         WHEN i.image_name LIKE 'prom/%' THEN 'prometheus'\n         WHEN i.image_name LIKE 'python/%' THEN 'python'\n         ELSE REGEXP_REPLACE(i.image_name, '^.+/', '')\n       END = '$image_filter')\nGROUP BY s.scan_batch_id\nORDER BY MIN(s.scan_date);",
+          "refId": "A"
+        }
+      ],
+      "title": "Baseline - Vulnerabilities Over Time",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Size Reduction %"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "green",
+                      "value": 0
+                    },
+                    {
+                      "color": "dark-green",
+                      "value": 50
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Vuln Reduction %"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 0
+                    },
+                    {
+                      "color": "green",
+                      "value": 50
+                    },
+                    {
+                      "color": "dark-green",
+                      "value": 90
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Vuln Reduction %"
+          }
+        ]
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH baseline_data AS (\n  SELECT \n    CASE\n      WHEN i.image_name LIKE 'vuln-demo/%' THEN REGEXP_REPLACE(i.image_name, '^vuln-demo/', '')\n      WHEN i.image_name LIKE 'grafana/%' THEN 'grafana'\n      WHEN i.image_name LIKE 'postgres/%' THEN 'postgres'\n      WHEN i.image_name LIKE 'prom/%' THEN 'prometheus'\n      WHEN i.image_name LIKE 'python/%' THEN 'python'\n      ELSE REGEXP_REPLACE(i.image_name, '^.+/', '')\n    END as name,\n    i.image_name,\n    i.size_bytes,\n    COUNT(v.id) as total_vulnerabilities,\n    SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as critical_count,\n    SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as high_count\n  FROM scans s\n  JOIN images i ON s.image_id = i.id\n  LEFT JOIN vulnerabilities v ON v.scan_id = s.id\n    AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'baseline' GROUP BY image_id\n  ) AND i.image_variant = 'baseline'\n  GROUP BY i.image_name, i.size_bytes\n),\nchainguard_data AS (\n  SELECT \n    CASE\n      WHEN i.image_name LIKE 'vuln-demo/%' THEN REGEXP_REPLACE(i.image_name, '^vuln-demo/', '')\n      WHEN i.image_name LIKE '%/grafana' THEN 'grafana'\n      WHEN i.image_name LIKE '%/postgres' THEN 'postgres'\n      WHEN i.image_name LIKE '%/prometheus' THEN 'prometheus'\n      WHEN i.image_name LIKE '%/python-demo-custom' THEN 'python'\n      ELSE REGEXP_REPLACE(i.image_name, '^.+/', '')\n    END as name,\n    i.image_name,\n    i.size_bytes,\n    COUNT(v.id) as total_vulnerabilities,\n    SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as critical_count,\n    SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as high_count\n  FROM scans s\n  JOIN images i ON s.image_id = i.id\n  LEFT JOIN vulnerabilities v ON v.scan_id = s.id\n    AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n  WHERE s.id IN (\n    SELECT MAX(id) FROM scans WHERE scan_status = 'completed' AND image_variant = 'chainguard' GROUP BY image_id\n  ) AND i.image_variant = 'chainguard'\n  GROUP BY i.image_name, i.size_bytes\n)\nSELECT \n  COALESCE(b.name, c.name) as \"Service\",\n  ROUND((b.size_bytes / 1024.0 / 1024.0)::numeric, 1) as \"Baseline Size (MB)\",\n  ROUND((c.size_bytes / 1024.0 / 1024.0)::numeric, 1) as \"Chainguard Size (MB)\",\n  ROUND((((b.size_bytes - c.size_bytes)::numeric / NULLIF(b.size_bytes, 0)) * 100)::numeric, 1) as \"Size Reduction %\",\n  b.total_vulnerabilities as \"Baseline Vulns\",\n  c.total_vulnerabilities as \"Chainguard Vulns\",\n  ROUND((((b.total_vulnerabilities - c.total_vulnerabilities)::numeric / NULLIF(b.total_vulnerabilities, 0)) * 100)::numeric, 1) as \"Vuln Reduction %\",\n  b.critical_count as \"Baseline Critical\",\n  c.critical_count as \"Chainguard Critical\",\n  b.high_count as \"Baseline High\",\n  c.high_count as \"Chainguard High\"\nFROM baseline_data b\nFULL OUTER JOIN chainguard_data c ON b.name = c.name\nWHERE (NULLIF('$image_filter', 'All') IS NULL OR COALESCE(b.name, c.name) = '$image_filter')\nORDER BY \"Vuln Reduction %\" DESC NULLS LAST;",
+          "refId": "A"
+        }
+      ],
+      "title": "Baseline vs Chainguard - Image Size & Vulnerability Comparison",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "postgresql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "axisSoftMin": 0,
+            "axisSoftMax": 2500
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Critical"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Medium"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Low"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 10,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "postgresql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH baseline_batches AS (\n  SELECT\n    TO_CHAR(MIN(s.scan_date), 'YYYY-MM-DD HH24:MI:SS') as metric,\n    MIN(s.scan_date) as sort_date,\n    SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as \"Critical\",\n    SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as \"High\",\n    SUM(CASE WHEN v.severity = 'MEDIUM' THEN 1 ELSE 0 END) as \"Medium\",\n    SUM(CASE WHEN v.severity = 'LOW' THEN 1 ELSE 0 END) as \"Low\",\n    s.scan_batch_id,\n    1 as sort_order\n  FROM scans s\n  JOIN images i ON s.image_id = i.id\n  LEFT JOIN vulnerabilities v ON v.scan_id = s.id\n    AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n  WHERE s.scan_status = 'completed'\n    AND s.scan_batch_id IS NOT NULL\n    AND s.image_variant = 'baseline'\n    AND (NULLIF('$image_filter', 'All') IS NULL OR\n         CASE\n           WHEN i.image_name LIKE 'vuln-demo/%' THEN REGEXP_REPLACE(i.image_name, '^vuln-demo/', '')\n           WHEN i.image_name LIKE 'grafana/%' THEN 'grafana'\n           WHEN i.image_name LIKE 'postgres/%' THEN 'postgres'\n           WHEN i.image_name LIKE 'prom/%' THEN 'prometheus'\n           WHEN i.image_name LIKE 'python/%' THEN 'python'\n           ELSE REGEXP_REPLACE(i.image_name, '^.+/', '')\n         END = '$image_filter')\n  GROUP BY s.scan_batch_id\n),\nnumbered_baseline AS (\n  SELECT\n    *,\n    ROW_NUMBER() OVER (ORDER BY sort_date) as batch_num,\n    COUNT(*) OVER () as total_batches\n  FROM baseline_batches\n),\nlabeled_baseline AS (\n  SELECT\n    metric,\n    sort_date,\n    CASE\n      WHEN batch_num = total_batches THEN 'Baseline'\n      ELSE 'Batch #' || batch_num\n    END as label,\n    \"Critical\",\n    \"High\",\n    \"Medium\",\n    \"Low\",\n    sort_order\n  FROM numbered_baseline\n),\nlatest_chainguard AS (\n  SELECT\n    TO_CHAR(MIN(s.scan_date) + INTERVAL '1 second', 'YYYY-MM-DD HH24:MI:SS') as metric,\n    MIN(s.scan_date) + INTERVAL '1 second' as sort_date,\n    'Chainguard' as label,\n    SUM(CASE WHEN v.severity = 'CRITICAL' THEN 1 ELSE 0 END) as \"Critical\",\n    SUM(CASE WHEN v.severity = 'HIGH' THEN 1 ELSE 0 END) as \"High\",\n    SUM(CASE WHEN v.severity = 'MEDIUM' THEN 1 ELSE 0 END) as \"Medium\",\n    SUM(CASE WHEN v.severity = 'LOW' THEN 1 ELSE 0 END) as \"Low\",\n    2 as sort_order\n  FROM scans s\n  JOIN images i ON s.image_id = i.id\n  LEFT JOIN vulnerabilities v ON v.scan_id = s.id\n    AND (NULLIF('${package_category:raw}', 'All') IS NULL OR v.package_category = '${package_category}')\n  WHERE s.scan_status = 'completed'\n    AND s.scan_batch_id IS NOT NULL\n    AND s.image_variant = 'chainguard'\n    AND (NULLIF('$image_filter', 'All') IS NULL OR\n         CASE\n           WHEN i.image_name LIKE 'vuln-demo/%' THEN REGEXP_REPLACE(i.image_name, '^vuln-demo/', '')\n           WHEN i.image_name LIKE '%/grafana' THEN 'grafana'\n           WHEN i.image_name LIKE '%/postgres' THEN 'postgres'\n           WHEN i.image_name LIKE '%/prometheus' THEN 'prometheus'\n           WHEN i.image_name LIKE '%/python-demo-custom' THEN 'python'\n           ELSE REGEXP_REPLACE(i.image_name, '^.+/', '')\n         END = '$image_filter')\n  GROUP BY s.scan_batch_id\n  ORDER BY MIN(s.scan_date) DESC\n  LIMIT 1\n)\nSELECT label as metric, \"Critical\", \"High\", \"Medium\", \"Low\"\nFROM (\n  SELECT metric, sort_date, label, \"Critical\", \"High\", \"Medium\", \"Low\", sort_order FROM labeled_baseline\n  UNION ALL\n  SELECT metric, sort_date, label, \"Critical\", \"High\", \"Medium\", \"Low\", sort_order FROM latest_chainguard\n) combined\nORDER BY sort_order, sort_date;",
+          "refId": "A"
+        }
+      ],
+      "title": "Vulnerability Trend: Baseline History \u2192 Chainguard Latest",
+      "type": "barchart"
+    }
+  ],
+  "schemaVersion": 42,
+  "tags": [
+    "comparison",
+    "baseline",
+    "chainguard",
+    "roi"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "All"
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "postgresql"
+        },
+        "definition": "SELECT 'All' as name\nUNION\nSELECT DISTINCT \n  CASE\n    WHEN i.image_name LIKE 'vuln-demo/%' THEN REGEXP_REPLACE(i.image_name, '^vuln-demo/', '')\n    WHEN i.image_name LIKE 'grafana/%' OR i.image_name LIKE '%/grafana' THEN 'grafana'\n    WHEN i.image_name LIKE 'postgres/%' OR i.image_name LIKE '%/postgres' THEN 'postgres'\n    WHEN i.image_name LIKE 'prom/%' OR i.image_name LIKE '%/prometheus' THEN 'prometheus'\n    WHEN i.image_name LIKE 'python/%' OR i.image_name LIKE '%/python-demo-custom' THEN 'python'\n    ELSE REGEXP_REPLACE(i.image_name, '^.+/', '')\n  END as name\nFROM images i\nORDER BY name;",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "image_filter",
+        "options": [],
+        "query": "SELECT 'All' as name\nUNION\nSELECT DISTINCT \n  CASE\n    WHEN i.image_name LIKE 'vuln-demo/%' THEN REGEXP_REPLACE(i.image_name, '^vuln-demo/', '')\n    WHEN i.image_name LIKE 'grafana/%' OR i.image_name LIKE '%/grafana' THEN 'grafana'\n    WHEN i.image_name LIKE 'postgres/%' OR i.image_name LIKE '%/postgres' THEN 'postgres'\n    WHEN i.image_name LIKE 'prom/%' OR i.image_name LIKE '%/prometheus' THEN 'prometheus'\n    WHEN i.image_name LIKE 'python/%' OR i.image_name LIKE '%/python-demo-custom' THEN 'python'\n    ELSE REGEXP_REPLACE(i.image_name, '^.+/', '')\n  END as name\nFROM images i\nORDER BY name;",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "All"
+        },
+        "description": "Filter by package category (OS, Application, Binary, Unknown)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Package Category",
+        "multi": false,
+        "name": "package_category",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "All"
+          },
+          {
+            "selected": false,
+            "text": "OS",
+            "value": "os"
+          },
+          {
+            "selected": false,
+            "text": "Language",
+            "value": "application"
+          },
+          {
+            "selected": false,
+            "text": "Binary",
+            "value": "binary"
+          },
+          {
+            "selected": false,
+            "text": "Unknown",
+            "value": "unknown"
+          }
+        ],
+        "query": "All : All, OS : os, Language : application, Binary : binary, Unknown : unknown",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Baseline vs Chainguard Comparison",
+  "uid": "baseline-chainguard-comparison",
+  "version": 1
+}
