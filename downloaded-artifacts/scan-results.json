@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-01-16T20:11:02.721182",
+  "timestamp": "2026-01-20T20:48:37.351798",
   "images": [
     {
       "image": "postgres:17",
       "os_level": {
         "critical": 0,
-        "high": 13,
-        "medium": 20,
+        "high": 6,
+        "medium": 19,
         "low": 10,
         "negligible": 86,
-        "unknown": 1,
-        "total": 130
+        "unknown": 4,
+        "total": 125
       },
       "app_level": {
         "critical": 0,
@@ -23,12 +23,12 @@
       },
       "total": {
         "critical": 0,
-        "high": 18,
-        "medium": 27,
+        "high": 11,
+        "medium": 26,
         "low": 10,
         "negligible": 86,
-        "unknown": 1,
-        "total": 142
+        "unknown": 4,
+        "total": 137
       }
     },
     {
@@ -36,10 +36,10 @@
       "os_level": {
         "critical": 0,
         "high": 4,
-        "medium": 12,
-        "low": 8,
+        "medium": 10,
+        "low": 6,
         "negligible": 384,
-        "unknown": 0,
+        "unknown": 4,
         "total": 408
       },
       "app_level": {
@@ -54,10 +54,10 @@
       "total": {
         "critical": 1,
         "high": 11,
-        "medium": 30,
-        "low": 10,
+        "medium": 28,
+        "low": 8,
         "negligible": 384,
-        "unknown": 0,
+        "unknown": 4,
         "total": 436
       }
     },
@@ -74,21 +74,21 @@
       },
       "app_level": {
         "critical": 0,
-        "high": 2,
+        "high": 3,
         "medium": 0,
         "low": 2,
         "negligible": 0,
         "unknown": 0,
-        "total": 4
+        "total": 5
       },
       "total": {
         "critical": 1,
-        "high": 2,
+        "high": 3,
         "medium": 3,
         "low": 2,
         "negligible": 0,
         "unknown": 0,
-        "total": 8
+        "total": 9
       }
     },
     {
@@ -96,11 +96,11 @@
       "os_level": {
         "critical": 0,
         "high": 0,
-        "medium": 22,
+        "medium": 25,
         "low": 35,
         "negligible": 0,
         "unknown": 0,
-        "total": 57
+        "total": 60
       },
       "app_level": {
         "critical": 0,
@@ -114,11 +114,11 @@
       "total": {
         "critical": 0,
         "high": 0,
-        "medium": 22,
+        "medium": 25,
         "low": 35,
         "negligible": 0,
         "unknown": 0,
-        "total": 57
+        "total": 60
       }
     },
     {
@@ -126,10 +126,10 @@
       "os_level": {
         "critical": 3,
         "high": 17,
-        "medium": 26,
+        "medium": 27,
         "low": 11,
         "negligible": 0,
-        "unknown": 1,
+        "unknown": 0,
         "total": 58
       },
       "app_level": {
@@ -144,10 +144,10 @@
       "total": {
         "critical": 3,
         "high": 17,
-        "medium": 26,
+        "medium": 27,
         "low": 11,
         "negligible": 0,
-        "unknown": 1,
+        "unknown": 0,
         "total": 58
       }
     }
@@ -155,30 +155,30 @@
   "summary": {
     "os_level": {
       "critical": 4,
-      "high": 34,
-      "medium": 83,
-      "low": 64,
+      "high": 27,
+      "medium": 84,
+      "low": 62,
       "negligible": 470,
-      "unknown": 2,
-      "total": 657
+      "unknown": 8,
+      "total": 655
     },
     "app_level": {
       "critical": 1,
-      "high": 14,
+      "high": 15,
       "medium": 25,
       "low": 4,
       "negligible": 0,
       "unknown": 0,
-      "total": 44
+      "total": 45
     },
     "total": {
       "critical": 5,
-      "high": 48,
-      "medium": 108,
-      "low": 68,
+      "high": 42,
+      "medium": 109,
+      "low": 66,
       "negligible": 470,
-      "unknown": 2,
-      "total": 701
+      "unknown": 8,
+      "total": 700
     }
   }
 }
