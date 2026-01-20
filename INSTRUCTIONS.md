@@ -24,7 +24,7 @@ Make a Pull Request like this: https://github.com/dylan-chainguard/vuln-demo/pul
 After merging, wait for CI to complete then run:
 
 ```
-./get-latest-results-from-github.sh
+./scripts/get-latest-results-from-github.sh
 ```
 
 ## Resetting the demo
@@ -34,5 +34,6 @@ After merging, wait for CI to complete then run:
 python3 scripts/reset-database.py
 
 # Revert main branch
-git revert $(git rev-parse HEAD~1)
+git revert <insert commit id>
+git push
 ```

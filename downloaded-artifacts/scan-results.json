@@ -1,106 +1,106 @@
 {
-  "timestamp": "2026-01-20T20:48:37.351798",
+  "timestamp": "2026-01-20T21:21:50.290253",
   "images": [
     {
-      "image": "postgres:17",
+      "image": "cgr.dev/dylans-donuts.com/postgres:17",
       "os_level": {
         "critical": 0,
-        "high": 6,
-        "medium": 19,
-        "low": 10,
-        "negligible": 86,
-        "unknown": 4,
-        "total": 125
+        "high": 1,
+        "medium": 1,
+        "low": 0,
+        "negligible": 0,
+        "unknown": 1,
+        "total": 3
       },
       "app_level": {
         "critical": 0,
-        "high": 5,
-        "medium": 7,
+        "high": 0,
+        "medium": 0,
         "low": 0,
         "negligible": 0,
         "unknown": 0,
-        "total": 12
+        "total": 0
       },
       "total": {
         "critical": 0,
-        "high": 11,
-        "medium": 26,
-        "low": 10,
-        "negligible": 86,
-        "unknown": 4,
-        "total": 137
+        "high": 1,
+        "medium": 1,
+        "low": 0,
+        "negligible": 0,
+        "unknown": 1,
+        "total": 3
       }
     },
     {
       "image": "vuln-demo/api-service:latest",
       "os_level": {
         "critical": 0,
-        "high": 4,
-        "medium": 10,
-        "low": 6,
-        "negligible": 384,
-        "unknown": 4,
-        "total": 408
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "negligible": 0,
+        "unknown": 1,
+        "total": 2
       },
       "app_level": {
-        "critical": 1,
-        "high": 7,
-        "medium": 18,
-        "low": 2,
+        "critical": 0,
+        "high": 8,
+        "medium": 15,
+        "low": 1,
         "negligible": 0,
         "unknown": 0,
-        "total": 28
+        "total": 24
       },
       "total": {
-        "critical": 1,
-        "high": 11,
-        "medium": 28,
-        "low": 8,
-        "negligible": 384,
-        "unknown": 4,
-        "total": 436
+        "critical": 0,
+        "high": 9,
+        "medium": 15,
+        "low": 1,
+        "negligible": 0,
+        "unknown": 1,
+        "total": 26
       }
     },
     {
       "image": "vuln-demo/frontend-service:latest",
       "os_level": {
-        "critical": 1,
-        "high": 0,
-        "medium": 3,
+        "critical": 0,
+        "high": 1,
+        "medium": 1,
         "low": 0,
         "negligible": 0,
-        "unknown": 0,
-        "total": 4
+        "unknown": 1,
+        "total": 3
       },
       "app_level": {
         "critical": 0,
-        "high": 3,
+        "high": 1,
         "medium": 0,
-        "low": 2,
+        "low": 1,
         "negligible": 0,
         "unknown": 0,
-        "total": 5
+        "total": 2
       },
       "total": {
-        "critical": 1,
-        "high": 3,
-        "medium": 3,
-        "low": 2,
+        "critical": 0,
+        "high": 2,
+        "medium": 1,
+        "low": 1,
         "negligible": 0,
-        "unknown": 0,
-        "total": 9
+        "unknown": 1,
+        "total": 5
       }
     },
     {
       "image": "vuln-demo/worker-service:latest",
       "os_level": {
         "critical": 0,
-        "high": 0,
-        "medium": 25,
-        "low": 35,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
         "negligible": 0,
-        "unknown": 0,
-        "total": 60
+        "unknown": 1,
+        "total": 2
       },
       "app_level": {
         "critical": 0,
@@ -113,24 +113,24 @@
       },
       "total": {
         "critical": 0,
-        "high": 0,
-        "medium": 25,
-        "low": 35,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
         "negligible": 0,
-        "unknown": 0,
-        "total": 60
+        "unknown": 1,
+        "total": 2
       }
     },
     {
       "image": "vuln-demo/nginx:latest",
       "os_level": {
-        "critical": 3,
-        "high": 17,
-        "medium": 27,
-        "low": 11,
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
         "negligible": 0,
-        "unknown": 0,
-        "total": 58
+        "unknown": 1,
+        "total": 2
       },
       "app_level": {
         "critical": 0,
@@ -142,43 +142,43 @@
         "total": 0
       },
       "total": {
-        "critical": 3,
-        "high": 17,
-        "medium": 27,
-        "low": 11,
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
         "negligible": 0,
-        "unknown": 0,
-        "total": 58
+        "unknown": 1,
+        "total": 2
       }
     }
   ],
   "summary": {
     "os_level": {
-      "critical": 4,
-      "high": 27,
-      "medium": 84,
-      "low": 62,
-      "negligible": 470,
-      "unknown": 8,
-      "total": 655
+      "critical": 0,
+      "high": 5,
+      "medium": 2,
+      "low": 0,
+      "negligible": 0,
+      "unknown": 5,
+      "total": 12
     },
     "app_level": {
-      "critical": 1,
-      "high": 15,
-      "medium": 25,
-      "low": 4,
+      "critical": 0,
+      "high": 9,
+      "medium": 15,
+      "low": 2,
       "negligible": 0,
       "unknown": 0,
-      "total": 45
+      "total": 26
     },
     "total": {
-      "critical": 5,
-      "high": 42,
-      "medium": 109,
-      "low": 66,
-      "negligible": 470,
-      "unknown": 8,
-      "total": 700
+      "critical": 0,
+      "high": 14,
+      "medium": 17,
+      "low": 2,
+      "negligible": 0,
+      "unknown": 5,
+      "total": 38
     }
   }
 }
