@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: cgr.dev/dylans-donuts.com/postgres:17
+    image: postgres:17
     container_name: vuln-demo-postgres
     environment:
       POSTGRES_DB: vulndb
