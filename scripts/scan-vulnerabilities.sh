@@ -54,7 +54,7 @@ APP_IMAGES=(
 # Infrastructure images based on variant
 if [[ "$VARIANT" == "baseline" ]]; then
     INFRA_IMAGES=(
-        "postgres:13"
+        "postgres:17"
         "grafana/grafana:latest"
         "prom/prometheus:latest"
         "python:3.12"
@@ -62,7 +62,7 @@ if [[ "$VARIANT" == "baseline" ]]; then
     )
 else  # chainguard
     INFRA_IMAGES=(
-        "cgr.dev/dylans-donuts.com/postgres:13"
+        "cgr.dev/dylans-donuts.com/postgres:17"
         "cgr.dev/dylans-donuts.com/grafana:latest"
         "cgr.dev/dylans-donuts.com/prometheus:latest"
         "cgr.dev/dylans-donuts.com/python:3.12"

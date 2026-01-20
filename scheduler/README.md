@@ -97,7 +97,7 @@ Each scheduled run scans:
 - `vuln-demo/frontend-service:baseline`
 - `vuln-demo/worker-service:baseline`
 - `vuln-demo/nginx:baseline`
-- `postgres:13`
+- `postgres:17`
 - `grafana/grafana:latest`
 - `prom/prometheus:latest`
 - `python:3.12`
@@ -107,7 +107,7 @@ Each scheduled run scans:
 - `vuln-demo/frontend-service:chainguard`
 - `vuln-demo/worker-service:chainguard`
 - `vuln-demo/nginx:chainguard`
-- `cgr.dev/chainguard-private/postgres:13`
+- `cgr.dev/chainguard-private/postgres:17`
 - `cgr.dev/chainguard-private/grafana:latest`
 - `cgr.dev/chainguard-private/prometheus:latest`
 - `cgr.dev/chrisbro.com/python:3.12`

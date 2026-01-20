@@ -156,8 +156,8 @@ def get_image_name(full_image: str) -> str:
     """Extract just the image name and tag from a full image path.
     
     Examples:
-    - postgres:18 -> postgres:18
-    - cgr.dev/dylans-donuts.com/postgres:18 -> postgres:18
+    - postgres:17 -> postgres:17
+    - cgr.dev/dylans-donuts.com/postgres:17 -> postgres:17
     - node:24-dev -> node:24-dev
     """
     # Remove registry path, keep only the last part after the final /

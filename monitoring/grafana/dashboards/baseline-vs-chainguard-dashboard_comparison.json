@@ -39,6 +39,7 @@
             "axisGridShow": true,
             "axisLabel": "",
             "axisPlacement": "left",
+            "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -70,7 +71,9 @@
               "mode": "off"
             }
           },
+          "fieldMinMax": false,
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1149,5 +1152,5 @@
   "timezone": "",
   "title": "Baseline vs Chainguard Comparison",
   "uid": "baseline-chainguard-comparison",
-  "version": 1
+  "version": 3
 }

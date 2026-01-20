@@ -1,0 +1,184 @@
+{
+    "timestamp": "2026-01-16T09:53:09.985990",
+    "images": [
+        {
+            "image": "postgres:17",
+            "os_level": {
+                "critical": 0,
+                "high": 13,
+                "medium": 20,
+                "low": 10,
+                "negligible": 86,
+                "unknown": 1,
+                "total": 130
+            },
+            "app_level": {
+                "critical": 0,
+                "high": 5,
+                "medium": 7,
+                "low": 0,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 12
+            },
+            "total": {
+                "critical": 0,
+                "high": 18,
+                "medium": 27,
+                "low": 10,
+                "negligible": 86,
+                "unknown": 1,
+                "total": 142
+            }
+        },
+        {
+            "image": "vuln-demo/api-service:latest",
+            "os_level": {
+                "critical": 0,
+                "high": 4,
+                "medium": 12,
+                "low": 8,
+                "negligible": 384,
+                "unknown": 0,
+                "total": 408
+            },
+            "app_level": {
+                "critical": 1,
+                "high": 7,
+                "medium": 18,
+                "low": 2,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 28
+            },
+            "total": {
+                "critical": 1,
+                "high": 11,
+                "medium": 30,
+                "low": 10,
+                "negligible": 384,
+                "unknown": 0,
+                "total": 436
+            }
+        },
+        {
+            "image": "vuln-demo/frontend-service:latest",
+            "os_level": {
+                "critical": 1,
+                "high": 0,
+                "medium": 3,
+                "low": 0,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 4
+            },
+            "app_level": {
+                "critical": 0,
+                "high": 2,
+                "medium": 0,
+                "low": 2,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 4
+            },
+            "total": {
+                "critical": 1,
+                "high": 2,
+                "medium": 3,
+                "low": 2,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 8
+            }
+        },
+        {
+            "image": "vuln-demo/worker-service:latest",
+            "os_level": {
+                "critical": 0,
+                "high": 0,
+                "medium": 22,
+                "low": 35,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 57
+            },
+            "app_level": {
+                "critical": 0,
+                "high": 0,
+                "medium": 0,
+                "low": 0,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 0
+            },
+            "total": {
+                "critical": 0,
+                "high": 0,
+                "medium": 22,
+                "low": 35,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 57
+            }
+        },
+        {
+            "image": "vuln-demo/nginx:latest",
+            "os_level": {
+                "critical": 3,
+                "high": 17,
+                "medium": 26,
+                "low": 11,
+                "negligible": 0,
+                "unknown": 1,
+                "total": 58
+            },
+            "app_level": {
+                "critical": 0,
+                "high": 0,
+                "medium": 0,
+                "low": 0,
+                "negligible": 0,
+                "unknown": 0,
+                "total": 0
+            },
+            "total": {
+                "critical": 3,
+                "high": 17,
+                "medium": 26,
+                "low": 11,
+                "negligible": 0,
+                "unknown": 1,
+                "total": 58
+            }
+        }
+    ],
+    "summary": {
+        "os_level": {
+            "critical": 4,
+            "high": 34,
+            "medium": 83,
+            "low": 64,
+            "negligible": 470,
+            "unknown": 2,
+            "total": 657
+        },
+        "app_level": {
+            "critical": 1,
+            "high": 14,
+            "medium": 25,
+            "low": 4,
+            "negligible": 0,
+            "unknown": 0,
+            "total": 44
+        },
+        "total": {
+            "critical": 5,
+            "high": 48,
+            "medium": 108,
+            "low": 68,
+            "negligible": 470,
+            "unknown": 2,
+            "total": 701
+        }
+    }
+}
