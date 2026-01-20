@@ -109,3 +109,7 @@ coverage.xml
 # Dependency Track (if you were using it)
 dtrack-data/
 .env
+
+baseline/worker-service/target
+chainguard/worker-service/target
+target/
