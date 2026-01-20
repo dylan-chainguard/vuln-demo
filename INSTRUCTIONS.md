@@ -36,5 +36,3 @@ python3 scripts/reset-database.py
 # Revert main branch
 git revert $(git rev-parse HEAD~1)
 ```
-
-Recreate the PR as above
