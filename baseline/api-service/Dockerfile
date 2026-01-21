@@ -1,4 +1,4 @@
-# Chainguard Python 3.12 dev image (minimal, hardened base with build tools)
+# Chainguard Python 3.12-dev image (minimal, hardened base with build tools)
 FROM cgr.dev/dylans-donuts.com/python:3.12-dev AS builder
 
 WORKDIR /app
