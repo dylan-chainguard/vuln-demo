@@ -1,26 +1,32 @@
-# Standard Python image (has vulnerabilities in base OS packages)
-FROM python:3.12-slim
+# Chainguard Python 3.12-dev image (minimal, hardened base with build tools)
+FROM cgr.dev/dylans-donuts.com/python:3.12-dev AS builder
 
 WORKDIR /app
 
-# Install build dependencies for psycopg2
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    libc6-dev \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Chainguard images use apk and glibc
+# They run as non-root by default
+USER root
+
+# Install PostgreSQL dev package for psycopg2
+RUN apk add --no-cache postgresql-18-dev
 
 # Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY app.py .
+USER nonroot
 
-# Non-root user
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
+# Runtime stage - minimal Python image
+FROM cgr.dev/dylans-donuts.com/python:3.12
+
+WORKDIR /app
+
+# Copy installed Python packages from builder
+COPY --from=builder /usr/lib/python3.12/site-packages /usr/lib/python3.12/site-packages
+
+# Copy application code
+COPY app.py ./
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+CMD ["app.py"]

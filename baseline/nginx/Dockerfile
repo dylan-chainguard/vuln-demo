@@ -1,5 +1,5 @@
-# Standard Nginx image (updated to more recent version)
-FROM nginx:1.27-alpine
+# Chainguard Nginx image (minimal, hardened base)
+FROM cgr.dev/dylans-donuts.com/nginx:latest
 
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
